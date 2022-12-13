@@ -1,0 +1,113 @@
+#VRML_SIM R2022b utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/objects/factory/containers/protos/WoodenBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/robots/gctronic/e-puck/protos/E-puck.proto"
+
+WorldInfo {
+  basicTimeStep 16
+  FPS 30
+  physicsDisableTime 0
+  defaultDamping Damping {
+  }
+  contactProperties [
+    ContactProperties {
+      material2 "dumbbell"
+      coulombFriction [
+        0
+      ]
+    }
+  ]
+}
+Viewpoint {
+  orientation -0.2307670153136661 0.10705750702089924 0.967101481145434 1.5456523511138087
+  position 0.01770818885827894 -0.4834048953725393 0.23381118219966052
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  floorTileSize 0.25 0.25
+  wallHeight 0.05
+}
+WoodenBox {
+  translation 0.197269 -0.622728 0.5
+  rotation 0 0 1 0.785398
+  size 0.1 0.1 0.1
+}
+E-puck {
+  translation -0.241839 0.119481 -4.44089e-15
+  rotation 0 0 1 -1.047195307179586
+  controller "epuck_go_forward"
+}
+Solid {
+  translation 0 0 0.19
+  rotation 0 1 0 1.5708
+  scale 3 3 3
+  children [
+    DEF G0 Group {
+      children [
+        Shape {
+          appearance PBRAppearance {
+            metalness 0.1
+          }
+          geometry Cylinder {
+            height 0.1
+            radius 0.01
+          }
+        }
+        Transform {
+          translation 0 0 0.06
+          children [
+            Shape {
+              appearance PBRAppearance {
+                metalness 0.1
+              }
+              geometry Sphere {
+                radius 0.03
+                subdivision 2
+              }
+            }
+          ]
+        }
+        Transform {
+          translation 0 0 -0.06
+          children [
+            Shape {
+              appearance PBRAppearance {
+                metalness 0.1
+              }
+              geometry Sphere {
+                radius 0.03
+                subdivision 2
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+  contactMaterial "dumbbell"
+  boundingObject USE G0
+  physics Physics {
+    density -1
+    mass 2
+    centerOfMass [
+      0 0 0.01
+    ]
+  }
+}
+WoodenBox {
+  translation 0.243549 -0.0522784 0.5
+  name "wooden box(2)"
+  size 0.1 0.1 0.1
+  mass 0.2
+}
+WoodenBox {
+  translation -0.485507 0.0404783 0.5
+  name "wooden box(1)"
+  size 0.1 0.1 0.1
+}

@@ -1,0 +1,762 @@
+PROTO dalek [
+  field SFVec3f    translation  -0.24 0.6 0.08
+  field SFRotation rotation     0 0 1 0
+  field SFString controller "controladorRObot4rueda"
+]
+{
+Robot {
+  translation IS translation
+  rotation IS rotation
+  name "dalek"
+children [
+    Compass {
+    }
+    DEF DS_SUELO DistanceSensor {
+      translation -1.67293e-08 1.67294e-08 -0.01
+      rotation 0.5773509358554485 0.5773489358556708 -0.5773509358554485 2.0944
+      scale 10 10 10
+      children [
+        DEF SENSORE Shape {
+          appearance PBRAppearance {
+            baseColor 0 0 1
+            metalness 0
+          }
+          geometry Box {
+            size 0.001 0.001 0.001
+          }
+        }
+      ]
+      name "ds_sue"
+      lookupTable [
+        0 0 0
+        0.3 3000 0
+      ]
+    }
+    DEF DS_PURE_RIGHT DistanceSensor {
+      translation -3.67323e-08 -0.02 0.12
+      rotation 0 0 1 -1.5708
+      children [
+        DEF SENSORE Shape {
+          appearance PBRAppearance {
+            baseColor 0 0 1
+            metalness 0
+          }
+          geometry Box {
+            size 0.01 0.01 0.01
+          }
+        }
+      ]
+      name "ds_pri"
+    }
+    DEF DS_PURE_LEFT DistanceSensor {
+      translation 0 0.02 0.12
+      rotation 0 0 1 1.5708
+      children [
+        DEF SENSORE Shape {
+          appearance PBRAppearance {
+            baseColor 0 0 1
+            metalness 0
+          }
+          geometry Box {
+            size 0.01 0.01 0.01
+          }
+        }
+      ]
+      name "ds_ple"
+    }
+    DEF PropellerR Propeller {
+      shaftAxis 0 0 1
+      centerOfThrust 0 0 0.01
+      thrustConstants 0 0
+      device RotationalMotor {
+        name "emiterR"
+      }
+    }
+    LED {
+      translation 0 0 -0.043
+      rotation 0 1 0 0
+      children [
+        DEF Bombilla2 Shape {
+          appearance PBRAppearance {
+            baseColor 0.0745098 0.0705882 0.164706
+            baseColorMap ImageTexture {
+              url [
+                "marcas.png"
+              ]
+            }
+            IBLStrength 7
+          }
+          geometry Cylinder {
+            height 0.01
+            radius 0.11
+          }
+        }
+      ]
+      name "engiGlo"
+      color [
+        0 0.615686 1
+      ]
+    }
+    Camera {
+      translation 0.15 0 0.34
+      fieldOfView 0.785
+      recognition Recognition {
+        frameColor 0.317647 0.239216 0.172549
+        frameThickness 3
+      }
+    }
+    GPS {
+    }
+    LED {
+      translation -0.008 -0.0570711 0.331071
+      rotation 1 0 0 0.785398
+      children [
+        DEF Bombilla2 Shape {
+          appearance PBRAppearance {
+            baseColor 0.47451 0.47451 0.47451
+            metalness 0.1
+          }
+          geometry Cylinder {
+            height 0.03
+            radius 0.0065
+          }
+        }
+      ]
+      name "led1"
+      color [
+        1 1 0.619608
+      ]
+    }
+    LED {
+      translation 0.138326 0 0.339327
+      rotation 0 1 0 1.39
+      children [
+        DEF Bombilla2 Shape {
+          appearance PBRAppearance {
+            baseColor 0.0745098 0.0705882 0.164706
+            metalness 0.1
+          }
+          geometry Cylinder {
+            height 0.01
+            radius 0.009
+          }
+        }
+      ]
+      name "led3"
+      color [
+        0 0 1
+      ]
+    }
+    LED {
+      translation -0.008 0.0570711 0.331071
+      rotation 1 0 0 -0.785398
+      children [
+        DEF Bombilla2 Shape {
+          appearance PBRAppearance {
+            baseColor 0.47451 0.47451 0.47451
+            metalness 0.1
+          }
+          geometry Cylinder {
+            height 0.03
+            radius 0.0065
+          }
+        }
+      ]
+      name "led2"
+      color [
+        1 1 0.619608
+      ]
+    }
+    DEF NuevoCuerpo Shape {
+      appearance PBRAppearance {
+        baseColor 1 0 0
+      }
+      geometry Box {
+        size 0.18 0.1 0.02
+      }
+    }
+    DEF Dalek Transform {
+      translation -0.01 0 -0.046
+      rotation 0 0 1 1.5708
+      scale 0.006 0.006 0.006
+      children [
+        DEF CUERPO Shape {
+          appearance PBRAppearance {
+            roughnessMap ImageTexture {
+              url [
+                "Dalek01_D-2351818444.jpg"
+              ]
+            }
+            metalness 0.8
+            IBLStrength 2
+            normalMap ImageTexture {
+              url [
+                "Dalek01_D-2351818444.jpg"
+              ]
+              repeatS FALSE
+              repeatT FALSE
+            }
+            normalMapFactor 14
+            occlusionMap ImageTexture {
+              url [
+                "Dalek01_D-2351818444.jpg"
+              ]
+              filtering 1
+            }
+          }
+          geometry Mesh {
+            url [
+              "../192937_Dalek__redrawn__scad___stl/files/DalekFull.stl"
+            ]
+            name "TheDalek"
+          }
+        }
+      ]
+    }
+    DEF DS_LEFT_BACK DistanceSensor {
+      translation -0.08 0.0275 0.0174118
+      rotation 0 0 1 2.87979
+      children [
+        DEF SENSORE Shape {
+          appearance PBRAppearance {
+            baseColor 0 0 1
+            metalness 0
+          }
+          geometry Box {
+            size 0.01 0.01 0.01
+          }
+        }
+      ]
+      name "ds_left(1)"
+      boundingObject USE SENSORE
+      physics Physics {
+      }
+    }
+    DEF DS_RIGHT_BACK DistanceSensor {
+      translation -0.08 -0.0275 0.0174118
+      rotation 0 0 1 -2.8797953071795863
+      children [
+        DEF SENSORE Shape {
+          appearance PBRAppearance {
+            baseColor 0 0 1
+            metalness 0
+          }
+          geometry Box {
+            size 0.01 0.01 0.01
+          }
+        }
+      ]
+      name "ds_right(1)"
+      boundingObject USE SENSORE
+      physics Physics {
+      }
+    }
+    DEF PropellerZ2 Propeller {
+      shaftAxis 0 0 1
+      centerOfThrust 0 0 0.4
+      thrustConstants 1 0.5
+      torqueConstants 0 0
+      device RotationalMotor {
+        name "emiterZ2"
+      }
+    }
+    DEF PropellerZ Propeller {
+      shaftAxis 0 0 1
+      centerOfThrust 0 0 0.4
+      thrustConstants 1 0.5
+      torqueConstants 0 0
+      device RotationalMotor {
+        name "emitterZ"
+      }
+    }
+    DEF PropellerX Propeller {
+      torqueConstants 0 0
+      device RotationalMotor {
+        name "emitterX"
+      }
+    }
+    DEF PropellerY Propeller {
+      shaftAxis 0 1 0
+      torqueConstants 0 0
+      device RotationalMotor {
+        name "emitterY"
+      }
+    }
+    DEF TRACK_LEFT Track {
+      translation 0.05 0.06 0
+      rotation 0 1 0 0
+      children [
+        TrackWheel {
+          position -0.1 0
+          rotation 0.7432488515075226 0.4730642137577719 -0.4730659514216698 1.8632634631736467
+          radius 0.03
+          children [
+            DEF WHEELBIG Shape {
+              appearance PBRAppearance {
+                baseColor 0 1 0
+                baseColorMap ImageTexture {
+                  url [
+                    "marcas.png"
+                  ]
+                }
+                metalness 0
+                textureTransform TextureTransform {
+                }
+              }
+              geometry Cylinder {
+                height 0.02
+                radius 0.03
+              }
+            }
+          ]
+        }
+        TrackWheel {
+          position -0.05 0.02
+          rotation 0.12974533352251827 -0.7011285677595968 0.7011311431540513 2.8835444674361868
+          radius 0.01
+          children [
+            DEF WHEELSMALL Shape {
+              appearance PBRAppearance {
+                baseColor 0 1 0
+                baseColorMap ImageTexture {
+                  url [
+                    "marcas.png"
+                  ]
+                }
+                metalness 0
+                textureTransform TextureTransform {
+                }
+              }
+              geometry Cylinder {
+                height 0.02
+                radius 0.01
+              }
+            }
+          ]
+        }
+        TrackWheel {
+          rotation 0.7432488515075226 0.4730642137577719 -0.4730659514216698 1.8632634631736467
+          radius 0.03
+          children [
+            DEF WHEELBIG Shape {
+              appearance PBRAppearance {
+                baseColor 0 1 0
+                baseColorMap ImageTexture {
+                  url [
+                    "marcas.png"
+                  ]
+                }
+                metalness 0
+              }
+              geometry Cylinder {
+                height 0.02
+                radius 0.03
+              }
+            }
+          ]
+        }
+        TrackWheel {
+          position -0.028 -0.032
+          rotation 0.12974533352251827 -0.7011285677595968 0.7011311431540513 2.8835444674361868
+          radius 0.01
+          children [
+            USE WHEELSMALL
+          ]
+        }
+        TrackWheel {
+          position -0.07 -0.032
+          rotation 0.4872872396734528 0.6174740257806771 -0.6174762939074103 2.2347439947065726
+          radius 0.01
+          children [
+            USE WHEELSMALL
+          ]
+        }
+      ]
+      name "track(2)"
+      boundingObject DEF OG0 Group {
+        children [
+          Transform {
+            translation -0.05 0 -0.005
+            children [
+              DEF BOXCentral Shape {
+                appearance PBRAppearance {
+                  baseColor 0 1 1
+                  baseColorMap ImageTexture {
+                    url [
+                      "marcas.png"
+                    ]
+                  }
+                  metalness 0
+                }
+                geometry Box {
+                  size 0.045 0.02 0.07
+                }
+              }
+            ]
+          }
+          Transform {
+            rotation 1 0 0 1.57
+            children [
+              DEF WHEEL Shape {
+                appearance PBRAppearance {
+                  baseColor 0 1 0
+                  baseColorMap ImageTexture {
+                    url [
+                      "marcas.png"
+                    ]
+                  }
+                  metalness 0
+                }
+                geometry Cylinder {
+                  height 0.02
+                  radius 0.03
+                }
+              }
+            ]
+          }
+          Transform {
+            translation -0.1 0 0
+            rotation 1 0 0 1.57
+            children [
+              DEF WHEEL Shape {
+                appearance PBRAppearance {
+                  baseColor 0 1 0
+                  baseColorMap ImageTexture {
+                    url [
+                      "marcas.png"
+                    ]
+                  }
+                  metalness 0
+                }
+                geometry Cylinder {
+                  height 0.02
+                  radius 0.03
+                }
+              }
+            ]
+          }
+          Transform {
+            translation -0.0143 0 -0.0254
+            rotation 0 1 0 -0.302
+            children [
+              DEF BOXCADENA Shape {
+                appearance PBRAppearance {
+                  baseColor 1 1 0
+                  baseColorMap ImageTexture {
+                    url [
+                      "marcas.png"
+                    ]
+                  }
+                  metalness 0
+                }
+                geometry Box {
+                  size 0.035 0.02 0.02
+                }
+              }
+            ]
+          }
+          Transform {
+            translation -0.0863 0 -0.0254
+            rotation 0 1 0 0.302
+            children [
+              DEF BOXCADENA Shape {
+                appearance PBRAppearance {
+                  baseColor 1 1 0
+                  baseColorMap ImageTexture {
+                    url [
+                      "marcas.png"
+                    ]
+                  }
+                  metalness 0
+                }
+                geometry Box {
+                  size 0.035 0.02 0.02
+                }
+              }
+            ]
+          }
+        ]
+      }
+      physics Physics {
+        density -1
+        mass 0.01
+      }
+      device [
+        DEF wheel1 LinearMotor {
+          name "orugaI"
+        }
+      ]
+      textureAnimation 0.1 0
+      animatedGeometry Shape {
+        appearance PBRAppearance {
+          baseColor 1 0.5 0.5
+          textureTransform TextureTransform {
+          }
+        }
+        geometry Box {
+          size 0.01 0.02 0.01
+        }
+      }
+      geometriesCount 20
+    }
+    DEF TRACK_RIGHT Track {
+      translation 0.05 -0.06 0
+      rotation 0 1 0 0
+      children [
+        TrackWheel {
+          position -0.1 0
+          rotation 0.7162870036415157 0.49342230374748414 -0.4934241163327799 1.8984493109935727
+          radius 0.03
+          children [
+            DEF WHEELBIG Shape {
+              appearance PBRAppearance {
+                baseColor 0 1 0
+                baseColorMap ImageTexture {
+                  url [
+                    "marcas.png"
+                  ]
+                }
+                metalness 0
+                textureTransform TextureTransform {
+                }
+              }
+              geometry Cylinder {
+                height 0.02
+                radius 0.03
+              }
+            }
+          ]
+        }
+        TrackWheel {
+          position -0.05 0.02
+          rotation 0.2080331460724884 -0.6916352708857372 0.6916378114316736 2.731378775041304
+          radius 0.01
+          children [
+            DEF WHEELSMALL Shape {
+              appearance PBRAppearance {
+                baseColor 0 1 0
+                baseColorMap ImageTexture {
+                  url [
+                    "marcas.png"
+                  ]
+                }
+                metalness 0
+                textureTransform TextureTransform {
+                }
+              }
+              geometry Cylinder {
+                height 0.02
+                radius 0.01
+              }
+            }
+          ]
+        }
+        TrackWheel {
+          rotation 0.7162870036415157 0.49342230374748414 -0.4934241163327799 1.8984493109935727
+          radius 0.03
+          children [
+            DEF WHEELBIG Shape {
+              appearance PBRAppearance {
+                baseColor 0 1 0
+                baseColorMap ImageTexture {
+                  url [
+                    "marcas.png"
+                  ]
+                }
+                metalness 0
+              }
+              geometry Cylinder {
+                height 0.02
+                radius 0.03
+              }
+            }
+          ]
+        }
+        TrackWheel {
+          position -0.028 -0.032
+          rotation 0.2080331460724884 -0.6916352708857372 0.6916378114316736 2.731378775041304
+          radius 0.01
+          children [
+            USE WHEELSMALL
+          ]
+        }
+        TrackWheel {
+          position -0.07 -0.032
+          rotation 0.4044544112410599 0.6466890894857327 -0.646691464894784 2.3729142495984608
+          radius 0.01
+          children [
+            USE WHEELSMALL
+          ]
+        }
+      ]
+      name "track(1)"
+      boundingObject DEF OG0 Group {
+        children [
+          Transform {
+            translation -0.05 0 -0.005
+            children [
+              DEF BOXCentral Shape {
+                appearance PBRAppearance {
+                  baseColor 0 1 1
+                  baseColorMap ImageTexture {
+                    url [
+                      "marcas.png"
+                    ]
+                  }
+                  metalness 0
+                }
+                geometry Box {
+                  size 0.045 0.02 0.07
+                }
+              }
+            ]
+          }
+          Transform {
+            rotation 1 0 0 1.57
+            children [
+              DEF WHEEL Shape {
+                appearance PBRAppearance {
+                  baseColor 0 1 0
+                  baseColorMap ImageTexture {
+                    url [
+                      "marcas.png"
+                    ]
+                  }
+                  metalness 0
+                }
+                geometry Cylinder {
+                  height 0.02
+                  radius 0.03
+                }
+              }
+            ]
+          }
+          Transform {
+            translation -0.1 0 0
+            rotation 1 0 0 1.57
+            children [
+              DEF WHEEL Shape {
+                appearance PBRAppearance {
+                  baseColor 0 1 0
+                  baseColorMap ImageTexture {
+                    url [
+                      "marcas.png"
+                    ]
+                  }
+                  metalness 0
+                }
+                geometry Cylinder {
+                  height 0.02
+                  radius 0.03
+                }
+              }
+            ]
+          }
+          Transform {
+            translation -0.0143 0 -0.0254
+            rotation 0 1 0 -0.302
+            children [
+              DEF BOXCADENA Shape {
+                appearance PBRAppearance {
+                  baseColor 1 1 0
+                  baseColorMap ImageTexture {
+                    url [
+                      "marcas.png"
+                    ]
+                  }
+                  metalness 0
+                }
+                geometry Box {
+                  size 0.035 0.02 0.02
+                }
+              }
+            ]
+          }
+          Transform {
+            translation -0.0863 0 -0.0254
+            rotation 0 1 0 0.302
+            children [
+              DEF BOXCADENA Shape {
+                appearance PBRAppearance {
+                  baseColor 1 1 0
+                  baseColorMap ImageTexture {
+                    url [
+                      "marcas.png"
+                    ]
+                  }
+                  metalness 0
+                }
+                geometry Box {
+                  size 0.035 0.02 0.02
+                }
+              }
+            ]
+          }
+        ]
+      }
+      physics Physics {
+        density -1
+        mass 0.01
+      }
+      device [
+        DEF wheel2 LinearMotor {
+          name "orugaD"
+        }
+      ]
+      textureAnimation 0.1 0
+      animatedGeometry Shape {
+        appearance PBRAppearance {
+          baseColor 1 0.5 0.5
+          textureTransform TextureTransform {
+          }
+        }
+        geometry Box {
+          size 0.01 0.02 0.01
+        }
+      }
+      geometriesCount 20
+    }
+    DEF DS_RIGHT DistanceSensor {
+      translation 0.0803407 -0.0274118 0.02
+      rotation 0 0 1 -0.261799
+      scale 10 10 10
+      children [
+        DEF SENSORE Shape {
+          appearance PBRAppearance {
+            baseColor 0 0 1
+            metalness 0
+          }
+          geometry Box {
+            size 0.001 0.001 0.001
+          }
+        }
+      ]
+      name "ds_right"
+      boundingObject USE SENSORE
+      physics Physics {
+      }
+    }
+    DEF DS_LEFT DistanceSensor {
+      translation 0.0803407 0.0274118 0.02
+      rotation 0 0 1 0.261799
+      scale 10 10 10
+      children [
+        USE SENSORE
+      ]
+      name "ds_left"
+      boundingObject USE SENSORE
+      physics Physics {
+      }
+    }
+  ]
+  boundingObject USE NuevoCuerpo
+  physics Physics {
+    density -1
+    mass 5
+    centerOfMass [
+      0 0 0
+    ]
+  }
+  controller IS controller
+}
+}
