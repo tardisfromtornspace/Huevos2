@@ -141,7 +141,7 @@ int main(int argc, char **argv) {
     printf("\nReconocidos %d objetos.\n", number_of_objects);
     
     const WbCameraRecognitionObject *objects = wb_camera_recognition_get_objects(camera);
-    /*for (i = 0; i < number_of_objects; ++i) {
+    for (i = 0; i < number_of_objects; ++i) {
       printf("Modelo de objeto %d: %s\n", i, objects[i].model);
       printf("Id del objeto %d: %d\n", i, objects[i].id);
       printf("Posicion relativa del objeto %d: %lf %lf %lf\n", i, objects[i].position[0], objects[i].position[1],
@@ -155,7 +155,7 @@ int main(int argc, char **argv) {
       for (j = 0; j < objects[i].number_of_colors; ++j)
         printf("- Color %d/%d: %lf %lf %lf\n", j + 1, objects[i].number_of_colors, objects[i].colors[3 * j],
                objects[i].colors[3 * j + 1], objects[i].colors[3 * j + 2]);
-    }*/
+    }
     // Lógica interna
     // NOTA: el resto de compañeros me dijeron que fuzzy logic no, así que no haremos fuzzy logic, se queda con este tochazo
     // Actúo
@@ -200,11 +200,12 @@ int main(int argc, char **argv) {
       left_speed = 0.0;
       right_speed = 0.0;
       if (onTheAir % 15 == 0) command[0] = -0.1; //0.3; // TO-DO ajustar
-        if (onTheAir == 1) {
+        if (onTheAir == 1 || ((meta - coordGPS[1]) < 2)) {
           command[0] = -0.4;
           command[2] = 4.5; //4.9; TO-DO usar 4.9563 para descenso y 4.9564 para ligero ascenso?
           command[3] = 4.5; //4.9; 4.95 logra un muy lento descenso
           counterBrujulear = 10;
+          //onTheAir = 0;
         } else { // Control altitud
           if (ds_values[4] > alturaMaximaPermitida){ 
             command[2] = 4.92; 
@@ -249,13 +250,10 @@ int main(int argc, char **argv) {
       
       wb_led_set(lights[0], 0);
       wb_led_set(lights[1], 0);
-      /*if ((coordGPS[1] < -0.4 || coordGPS[1] > bordePistaIzq) && counterBrujulear <= 0) {
-        left_speed *= 0.1;
-        right_speed *= 0.1;
-      }*/
+
       if (ds_values[0] < 650.0 || ds_values[1] < 650.0){ // TO-DO aniadir estabilidad, fuzzy logic?
         printf("Detecto obstaculo");
-        if (ds_values[0] < 650.0 && ds_values[1] < 650.0 && fabs(coordGPS[2]) < 0.08 && !(coordGPS[1] < -0.4 || coordGPS[1] > bordePistaIzq)){
+        if (ds_values[0] < 650.0 && ds_values[1] < 650.0 && fabs(coordIniciales[2]) < 0.08 && coordIniciales[1] > 0.9 && fabs(coordIniciales[0]) < 0.1 && !(coordGPS[1] < -0.4 || coordGPS[1] > bordePistaIzq)){
           if (falsaAlarma == 0) {
           printf("A VOLAR");
           left_speed = 0.0;
