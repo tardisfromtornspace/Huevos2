@@ -1,4 +1,4 @@
-build/release/controladorRObot4rueda.o: controladorRObot4rueda.c \
+build/release/controladorDalek.o: controladorDalek.c \
  C:\Program\ Files\Webots/include/controller/c/webots/robot.h \
  C:\Program\ Files\Webots/include/controller/c/webots/types.h \
  C:\Program\ Files\Webots/include/controller/c/webots/nodes.h \

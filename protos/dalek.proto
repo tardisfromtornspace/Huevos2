@@ -1,7 +1,7 @@
 PROTO dalek [
   field SFVec3f    translation  -0.24 0.6 0.08
   field SFRotation rotation     0 0 1 0
-  field SFString controller "controladorRObot4rueda"
+  field SFString controller "controladorDalek"
 ]
 {
 Robot {
@@ -277,7 +277,8 @@ children [
     }
     DEF PropellerY Propeller {
       shaftAxis 0 1 0
-      torqueConstants 0 0
+      thrustConstants 0 0
+      torqueConstants 1 0
       device RotationalMotor {
         name "emitterY"
       }

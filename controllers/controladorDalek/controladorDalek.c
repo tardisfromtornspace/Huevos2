@@ -1,8 +1,8 @@
 /*
- * File:          controladorRObot4rueda.c
- * Date:
- * Description:
- * Author:
+ * File:          controladorDalek.c
+ * Date:          16 de Diciembre 2022
+ * Description:   Exterminar
+ * Author:        Elite Incendiary Systems
  * Modifications:
  */
 
@@ -43,8 +43,8 @@
 int main(int argc, char **argv) {
   /* necessary to initialize webots stuff */
   double command[5] = {0.0, 0.0, 0.0, 0.0, 0.0}; // X, Y, Z, Z2, Rotacion X. 2.1 es lo suficiente para volar
-  // 5.0 ascenso suave 4.9 descenso suave.
   wb_robot_init();
+  
   // ENU es East-North-Up, el segundo valor es el Norte
   WbDeviceTag compas = wb_robot_get_device("compass");
   wb_compass_enable(compas, TIME_STEP);
@@ -53,6 +53,7 @@ int main(int argc, char **argv) {
   printf("Compas: %lf, %lf, %lf\n", coordIniciales[0], coordIniciales[1], coordIniciales[2]);
 
   double compasInicialVerdad[3];
+  double compasIncAnterior;
   int i, j;
   
   bool avoid_obstacle_counter = 0;
@@ -63,7 +64,8 @@ int main(int argc, char **argv) {
   int maxTiempoEnElAire = 25;
   int counterBrujulear = 0;
   int sentidoGiro = 1;
-  int falsaAlarma = 2;
+  int falsaAlarma = 8;
+  int numdeVuelos = 2; // Simulacion de que el dalek se queda sin suficiente combustible para despegar
   double centrodelapista = 0.6; // El "centro" del carril
   int centrarse = 0;
   double meta = 15.0; // Localización de la meta
@@ -104,11 +106,6 @@ int main(int argc, char **argv) {
   }
   wb_led_set(lights[2], 1);
   
-  // TO-DO Cambiar a control de robot
-  printf("Using keyboard control (click in the 3D windows before pressing keys).\n");
-  printf("Available control keys: up, down, right, left, page up, page down and space (reset).\n");
-  wb_keyboard_enable(TIME_STEP);
-  
   // Handle emitter
   WbDeviceTag gEmitter[5];
   char engines_names[5][9] = {"emitterX", "emitterY", "emitterZ", "emiterZ2", "emiterR"};
@@ -117,7 +114,7 @@ int main(int argc, char **argv) {
     wb_motor_set_position(gEmitter[i], INFINITY);
   }
   
-//TO-DO BORRA
+    //Inicialización
     wb_motor_set_velocity(wheels[0], 0.0);
     wb_motor_set_velocity(wheels[1], 0.0);
     wb_motor_set_velocity(gEmitter[0], command[0]);
@@ -129,6 +126,7 @@ int main(int argc, char **argv) {
   while (wb_robot_step(TIME_STEP) != -1) {
     if (firstTime) {
       firstTime = 0;
+      compasIncAnterior = coordIniciales[2];
       compasInicialVerdad[0] = coordIniciales[0]; // East. East 0 y North 1 es de frente
       compasInicialVerdad[1] = coordIniciales[1]; // North East 1 y North 0 es para la izq, East -1 y North 0 es para la dcha
       compasInicialVerdad[2] = coordIniciales[2]; // Up
@@ -166,6 +164,13 @@ int main(int argc, char **argv) {
       ds_values[i] = wb_distance_sensor_get_value(ds[i]);
       printf("Control ds %d: %lf", i, ds_values[i]);
     }
+
+    printf("Compasanterior = %lf", compasIncAnterior);
+    if (coordIniciales[2] > 0){
+      if (compasIncAnterior > coordIniciales[2]) command[1] = 0;
+    } else
+      if (compasIncAnterior < coordIniciales[2]) command[1] = 0;
+    compasIncAnterior = coordIniciales[2];
     if (avoid_obstacle_counter > 0) {
       avoid_obstacle_counter--;
       if (sentidoGiro == 1){
@@ -178,13 +183,14 @@ int main(int argc, char **argv) {
         printf("Despegue");
         left_speed = 0.0;
         right_speed = 0.0;
-        command[0] = -0.1;
-        if (ds_values[4] > alturaMaximaPermitida){ // TO-DO quizá aniadir un sensor de distancia a la cabeza?
+        command[1] = 0.016  * (1 - 0.5 * (coordIniciales[2] + compasIncAnterior));
+        command[0] = 0.7;
+        if (ds_values[4] > alturaMaximaPermitida){ // quizá aniadir un sensor de distancia a la cabeza?
           command[2] = 4.9363; // TO-DO avisar al profe que usamos una lookup table mejor HECHO
           command[3] = 4.9363;
         } else {
-          command[2] = 5.3; //5.0;
-          command[3] = 5.3; //4.96;
+          command[2] = 5.3;
+          command[3] = 5.3; 
           if ((ds_values[0] < 970.0 || ds_values[1] < 970.0) && avoid_obstacle_counter < 1) avoid_obstacle_counter = 5;
         }
         wb_led_set(lights[3], 1);
@@ -195,24 +201,24 @@ int main(int argc, char **argv) {
       wb_led_set(lights[1], 1);
       
     } else { // read sensors
+      command[1] = 0;
       if (onTheAir > 0) {
       printf("ON THE AIR");
       left_speed = 0.0;
       right_speed = 0.0;
-      if (onTheAir % 15 == 0) command[0] = -0.1; //0.3; // TO-DO ajustar
         if (onTheAir == 1 || ((meta - coordGPS[1]) < 2)) {
-          command[0] = -0.4;
-          command[2] = 4.5; //4.9; TO-DO usar 4.9563 para descenso y 4.9564 para ligero ascenso?
-          command[3] = 4.5; //4.9; 4.95 logra un muy lento descenso
+          command[0] = 1.1;
+          command[2] = 4.5;
+          command[3] = 4.5;
           counterBrujulear = 10;
-          //onTheAir = 0;
         } else { // Control altitud
+          command[0] = 2.5;
           if (ds_values[4] > alturaMaximaPermitida){ 
             command[2] = 4.92; 
             command[3] = 4.92;
           } else {
-            command[2] = 5.12; //6.9;
-            command[3] = 5.12; //6.9;
+            command[2] = 5.12;
+            command[3] = 5.12;
           }
 
         if (ds_values[0] < 970.0 || ds_values[1] < 970.0 || avoid_obstacle_counter2 > 0){ // TO-DO aniadir estabilidad, fuzzy logic?
@@ -221,41 +227,49 @@ int main(int argc, char **argv) {
         } else {
               if (coordIniciales[1] < compasInicialVerdad[1] && coordIniciales[0] > compasInicialVerdad[0]){
                 printf("Giro izda");
-                command[4] = 0.0051;
+                command[4] = 0.0051 * (1 - 1 * coordIniciales[0]);
               }else if (coordIniciales[1] < compasInicialVerdad[1] && coordIniciales[0] < compasInicialVerdad[0]){
                 printf("Giro dcha");
-                command[4] = -0.0051;
+                command[4] = -0.0051 * (1 - 1 * coordIniciales[0]);
               }else {
                 printf("No giro, voy de frente");
                 command[4] = 0.0;
               }
-              // TO-DO Fuzzy logic?
-        
         }
         
         }
         onTheAir--;
-      } // else command[0] = 0.0; // TO-DO Detener o manejar el giro con PropellerR?
+      }
       if (ds_values[4] < 480) {
           if (onTheAir == 0) {
-          command[0] = 0.0; //6.9;
-          command[2] = 0.0; //6.9;
-          command[3] = 0.0; //6.9;
+          command[0] = 0.0;
+          command[2] = 0.0;
+          command[3] = 0.0;
           } else {
-            //command[0] = -1.0;
             if (onTheAir > 15) onTheAir = 15;
           }
           wb_led_set(lights[3], 0);
-      } //else if (onTheAir == 0) command[0] = 0.06;
+      }
       
       wb_led_set(lights[0], 0);
       wb_led_set(lights[1], 0);
 
-      if (ds_values[0] < 650.0 || ds_values[1] < 650.0){ // TO-DO aniadir estabilidad, fuzzy logic?
+      if (ds_values[0] < 650.0 || ds_values[1] < 650.0){
         printf("Detecto obstaculo");
-        if (ds_values[0] < 650.0 && ds_values[1] < 650.0 && fabs(coordIniciales[2]) < 0.08 && coordIniciales[1] > 0.9 && fabs(coordIniciales[0]) < 0.1 && !(coordGPS[1] < -0.4 || coordGPS[1] > bordePistaIzq)){
-          if (falsaAlarma == 0) {
-          printf("A VOLAR");
+        printf (" %d %d %d %d %d %d ", numdeVuelos > 0, ds_values[0] < 650.0, ds_values[1] < 650.0, fabs(coordIniciales[2]) < 0.01, coordIniciales[1] > 0.9, (coordIniciales[0] < 0.2 && coordIniciales[0] > -0.2));
+        bool candidato = (numdeVuelos > 0 && ds_values[0] < 650.0 && ds_values[1] < 650.0 && fabs(coordIniciales[2]) < 0.01 && coordIniciales[1] > 0.9 && coordGPS[1] > bordePistaDcha && coordGPS[1] < bordePistaIzq);
+        bool aVolar = 0;
+        if (candidato){
+          if (falsaAlarma == 0){ 
+            if (coordIniciales[0] < 0.16 && coordIniciales[0] > -0.16) aVolar = 1;
+          }else falsaAlarma--;
+          counterBrujulear = 12;
+        } else falsaAlarma = 8;
+        printf("Valor de a volar %d", aVolar);
+        printf("Valor de falsa alarma: %d", falsaAlarma);
+        if (aVolar){
+          printf(" A VOLAR");
+          numdeVuelos--;
           left_speed = 0.0;
           right_speed = 0.0;
           command[0] = 0.1;
@@ -264,15 +278,15 @@ int main(int argc, char **argv) {
           sentidoGiro = 3;
           onTheAir = maxTiempoEnElAire;
           avoid_obstacle_counter = 16;
-          } else falsaAlarma--;
-          counterBrujulear = 12;
         } else {
-          falsaAlarma = 8;
-          if (ds_values[0] < 600.0 && ds_values[1] > 600.0 && fabs(coordGPS[2]) < 0.1) {
+           printf(" A EVITAR");
+          if (ds_values[0] < 600.0 && ds_values[1] > ds_values[0] && fabs(coordGPS[2]) < 0.1) {
+            printf(" por la dcha");
             sentidoGiro = 2;
             avoid_obstacle_counter = 16;
             counterBrujulear = 12;
-          } else if (ds_values[0] > 600.0 && ds_values[1] < 600.0 && fabs(coordGPS[2]) < 0.1) {
+          } else if (ds_values[1] < 600.0 && ds_values[1] < ds_values[0] && fabs(coordGPS[2]) < 0.1) {
+            printf(" por la izq");
             sentidoGiro = 1;
             avoid_obstacle_counter = 16;
             counterBrujulear = 12;
@@ -280,7 +294,7 @@ int main(int argc, char **argv) {
         }
         
         centrarse = 0;
-
+        
       } else {
         falsaAlarma = 8;
         if (counterBrujulear <= 0) {
@@ -288,52 +302,25 @@ int main(int argc, char **argv) {
               if (coordIniciales[1] < compasInicialVerdad[1] && coordIniciales[0] > compasInicialVerdad[0]){
                   left_speed *= (0.8 * (1 - 1 * coordIniciales[0]));
                   right_speed *= (0.8 * (1 + 1 * coordIniciales[0]));
-                  /*left_speed *= (0.8 * (1 - 0.1 * coordIniciales[0]));
-                  right_speed *= (0.8 * (1 + 0.1 * coordIniciales[0]));*/
 
               }else if (coordIniciales[1] < compasInicialVerdad[1] && coordIniciales[0] < compasInicialVerdad[0]){
-                   left_speed *= (0.8 * (1 - 1 * coordIniciales[0])); //0.8
+                   left_speed *= (0.8 * (1 - 1 * coordIniciales[0]));
                    right_speed *= (0.8 * (1 + 1 * coordIniciales[0]));  
-                   /*                   left_speed *= (0.8 * (1 - 0.1 * coordIniciales[0])); //0.8
-                   right_speed *= (0.8 * (1 + 0.1 * coordIniciales[0])); */
               }
               printf("Debo hacer centrado: %f - %f = %f", coordGPS[1], centrodelapista, coordGPS[1] - centrodelapista);
               left_speed *= (1 - 0.05  * centrarse * (coordGPS[1] - centrodelapista));
               right_speed *= (1 + 0.05 * centrarse * (coordGPS[1] - centrodelapista));
               if (centrarse < 20) centrarse++;
               
-              // GPS
-              //if ((coordGPS[1] < -0.4 || coordGPS[1] > 1.6)){
-              //  left_speed  *= (1 * (1 + 1 * (coordGPS[1] - centrodelapista));
-              //  right_speed *= (1 * (1 + 1 * (coordGPS[1] - centrodelapista))); 
-              //
-              //}
-              
        } else counterBrujulear--;       
       }
     }
-    if (ds_values[2] < 97.0 || coordIniciales[2] > 0.5) { // TO-DO arreglo con fuzzy logic
-        command[1] = -0.01; // Laterales
-      } else if (ds_values[3] < 97.0 || coordIniciales[2] < -0.5) {
-        command[1] = 0.01;
-      } else {
-        if (onTheAir > 0) {
-            if (coordIniciales[1] < compasInicialVerdad[1] && coordIniciales[0] > compasInicialVerdad[0]){
-                command[1] = 0.151;
-              }else if (coordIniciales[1] < compasInicialVerdad[1] && coordIniciales[0] < compasInicialVerdad[0]){
-                command[1] = -0.151;
-              }else {
-                
-                command[4] = 0.0;
-              }
-        } else command[1] = 0.0;
-      }
-      
-     if (coordGPS[1] < bordePistaDcha && coordIniciales[0] < 0){
+
+     if (coordGPS[1] < bordePistaDcha && coordIniciales[0] < 0.5){
                 sentidoGiro = 1;
                 avoid_obstacle_counter = 16;
      }
-     if((coordGPS[1] > bordePistaIzq) && coordIniciales[0] > 0){
+     if((coordGPS[1] > bordePistaIzq) && coordIniciales[0] > -0.5){
                 sentidoGiro = 2;
                 avoid_obstacle_counter = 16;
      }
@@ -346,7 +333,6 @@ int main(int argc, char **argv) {
       
       wb_motor_set_velocity(wheels[0], left_speed);
       wb_motor_set_velocity(wheels[1], right_speed);
-      //wb_emitter_send(gEmitter, command, sizeof(command));
       wb_motor_set_velocity(gEmitter[0], command[0]);
       //wb_motor_set_force(gEmitter[0], command[0]);
       wb_motor_set_velocity(gEmitter[1], command[1]);
